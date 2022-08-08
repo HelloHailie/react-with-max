@@ -44,3 +44,5 @@ const Search = React.memo((props) => {
 });
 
 export default Search;
+
+("https://react-hooks-update-with-max-default-rtdb.asia-southeast1.firebasedatabase.app/ingredients.json");
