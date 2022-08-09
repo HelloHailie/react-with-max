@@ -1,4 +1,10 @@
-import React, { useReducer, useState, useEffect, useCallback } from "react";
+import React, {
+  useReducer,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 //reducer는 여러개의 입력을 받아 하나의 결과를 반환하는 함수다.
 import IngredientForm from "./IngredientForm";
 import Search from "./Search";
@@ -75,7 +81,7 @@ const Ingredients = () => {
     dispatch({ type: "SET", ingredients: filteredIngredients });
   }, []);
 
-  const addIngredientHandler = (ingredient) => {
+  const addIngredientHandler = useCallback((ingredient) => {
     //setIsLoading(true);
     dispatchHttp({ type: "SEND" });
     fetch(
@@ -102,9 +108,9 @@ const Ingredients = () => {
           ingredient: { id: responseData.name, ...ingredient },
         });
       });
-  };
+  }, []);
 
-  const removeIngredientHandler = (ingredientId) => {
+  const removeIngredientHandler = useCallback((ingredientId) => {
     //setIsLoading(true);
     dispatchHttp({ type: "SEND" });
     fetch(
@@ -127,12 +133,21 @@ const Ingredients = () => {
           error //setError(error.message), setIsLoading(false))
         ) => dispatchHttp({ type: "ERROR", errorMessage: error.message })
       );
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     //setError(null);
     dispatchHttp({ type: "CLEAR" });
-  };
+  }, []);
+
+  const ingredientList = useMemo(() => {
+    return (
+      <IngredientList
+        ingredients={userIngredients}
+        onRemoveItem={removeIngredientHandler}
+      />
+    );
+  }, [userIngredients, removeIngredientHandler]);
 
   return (
     <div className='App'>
@@ -150,10 +165,7 @@ const Ingredients = () => {
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
         {/* Need to add list here! */}
-        <IngredientList
-          ingredients={userIngredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        {ingredientList}
       </section>
     </div>
   );
